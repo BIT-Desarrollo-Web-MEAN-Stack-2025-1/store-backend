@@ -4,7 +4,7 @@
   "description": "API Rest para Fonefo Kids",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node --watch ./index.js"
   },
   "author": "Juan Carlos Jiménez Gutiérrez <jcarlosj.dev@gmail.com>",
   "license": "ISC",
