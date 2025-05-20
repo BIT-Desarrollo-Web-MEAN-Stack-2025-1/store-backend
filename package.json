@@ -2,10 +2,10 @@
   "name": "fonefo-kids-backend",
   "version": "1.0.0",
   "description": "API Rest para Fonefo Kids",
-  "main": "index.js",
+  "main": "index.mjs",
   "type": "module",
   "scripts": {
-    "dev": "node --watch ./index.js"
+    "dev": "node --watch ./src/index.mjs"
   },
   "author": "Juan Carlos Jiménez Gutiérrez <jcarlosj.dev@gmail.com>",
   "license": "ISC",
