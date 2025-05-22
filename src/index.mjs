@@ -4,6 +4,10 @@ import product from './routes/product.route.mjs';   // Importamos las rutas de l
 
 const app = express();                      // Invocando la ejecucion de Express
 
+// Invocar la base de datos.
+
+app.use( express.json() );                  // Habilito el interprete de Formato JSON
+
 // Endpoint: http://localhost:3000/
 app.use( product );                         // Implementar la ruta como un Middleware de Express
 
