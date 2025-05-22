@@ -1,10 +1,12 @@
 // const express = require( 'express' );    // Importacion de dependencia usando CommonJS
 import express from 'express';              // Importacion de dependencia usando ESModule
+
 import product from './routes/product.route.mjs';   // Importamos las rutas de la entidad producto
+import dbConnection from './config/mongo.config.mjs';
 
 const app = express();                      // Invocando la ejecucion de Express
 
-// Invocar la base de datos.
+dbConnection();                             // Invocar la base de datos.
 
 app.use( express.json() );                  // Habilito el interprete de Formato JSON
 
