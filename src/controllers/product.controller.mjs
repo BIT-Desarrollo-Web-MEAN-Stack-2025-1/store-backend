@@ -1,15 +1,22 @@
-// Controller: Controlar el Flujo de Peticiones y Respuestas del Cliente
+import productModel from "../schemas/product.schema.mjs";
 
-const createProduct = ( req, res ) => {
-    const inputData = req.body; 
+const createProduct = async ( req, res ) => {
+    const inputData = req.body;     // Estraigo el objeto enviado
 
-    console.log( inputData );
+    // try: Controla las excepciones de la consulta a la base datos
+    try {
+        const registeredProduct = await productModel.create( inputData );
 
-    res.send( inputData );
+        console.log( registeredProduct );        // Imprime en la consula
+        res.status( 201 ).json( registeredProduct );           // Enviando la respuesta al cliente
+    } 
+    catch (error) { // Catch: Captura el error producido por la excepcion
+        console.error( error );
+        res.status( 500 ).json({ msg: 'Error: No se pudo registrar el producto' });
+    }
+
 }
 
-
-// Exponiendo las funcionalidades de este archivo usando el export
 export {
     createProduct
 }
