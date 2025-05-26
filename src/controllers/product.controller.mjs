@@ -17,6 +17,13 @@ const createProduct = async ( req, res ) => {
 
 }
 
+const getAllProducts = async ( req, res ) => {
+    const data = await productModel.find({});
+    res.json( data );
+}
+
+// Exponer las funcionalidades para ser usadas por otros archivos
 export {
-    createProduct
+    createProduct,
+    getAllProducts
 }
