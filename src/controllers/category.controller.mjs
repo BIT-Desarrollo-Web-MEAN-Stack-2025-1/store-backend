@@ -17,8 +17,22 @@ const createCategory = async ( req, res ) => {
 
 }
 
+const getAllCategories = async ( req, res ) => {
+
+    try {
+        const data = await categoryModel.find({});
+        res.status( 200 ).json( data );        
+    } 
+    catch ( error ) {
+        console.error( error );
+        res.status( 500 ).json({ msg: 'Error: No se pudo obtener el listado de categorias' });
+    }
+
+}
+
 
 // Exponer las funcionalidades para ser usadas por otros archivos
 export {
-    createCategory
+    createCategory,
+    getAllCategories
 }
