@@ -51,9 +51,50 @@ const getProductById = async ( req, res ) => {
     
 }
 
+const removeProductById = async ( req, res ) => {
+    const productId = req.params.id;
+
+    try {
+        const data = await productModel.findByIdAndDelete( productId );
+        // const data = await productModel.findOneAndDelete({ _id: productId });
+
+        // Verifica si el producto No existe y lanza el respectivo mensaje al cliente
+        if( ! data ) {
+            return res.json({ msg: 'El producto no se encuentra registrado' });
+        }
+
+        res.json( data );
+    } 
+    catch ( error ) {
+        console.error( error );
+        res.json({ msg: 'Error: No pudo eliminar el producto' });
+    }
+ 
+}
+
+const updateProductById = async ( req, res ) => {
+    const productId = req.params.id;    // Obtenemos el ID de la parametrizacion de la ruta
+    const inputData = req.body;         // Obtenemos el body de la peticion
+
+    try {
+        const data = await productModel.findByIdAndUpdate( productId, inputData, { new: true } );
+        // const data = await productModel.findOneAndUpdate({ _id: productId }, inputData, { new: true });
+
+        res.json( data );        
+    } 
+    catch ( error ) {
+        console.error( error );
+        res.json({ msg: 'Error: No se pudo actualizar el producto' });
+    }
+
+}
+
+
 // Exponer las funcionalidades para ser usadas por otros archivos
 export {
     createProduct,
     getAllProducts,
-    getProductById
+    getProductById,
+    removeProductById,
+    updateProductById
 }
