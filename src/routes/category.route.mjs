@@ -1,5 +1,5 @@
 import express from 'express';      // Importo la dependencia
-import { createCategory, getAllCategories, getCategoryById } from '../controllers/category.controller.mjs';
+import { createCategory, getAllCategories, getCategoryById, removeCategoryById } from '../controllers/category.controller.mjs';
 
 const router = express.Router();    // Invocando el Router de Express
 
@@ -8,7 +8,8 @@ router.post( '/api/categories', createCategory );
 router.get( '/api/categories', getAllCategories );
 
 // :id (Paramentrizar la ruta: Creamos una especie de variable)
-router.get( '/api/categories/:id', getCategoryById ); 
+router.get( '/api/categories/:id', getCategoryById );
+router.delete( '/api/categories/:id', removeCategoryById ); 
 
 
 

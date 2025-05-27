@@ -5,6 +5,14 @@ const createCategory = async ( req, res ) => {
 
     // try: Controla las excepciones de la consulta a la base datos
     try {
+        const categoryFound = await categoryModel.findOne({ name: inputData.name });
+
+        // Verifica si la categoria YA existe y lanza el respectivo mensaje al cliente
+        if( categoryFound ) {
+            return res.json({ msg: 'La categoria ya se encuentra registrada' });
+        }
+
+        // Registra la categoria
         const registeredCategory = await categoryModel.create( inputData );
 
         console.log( registeredCategory );                      // Imprime en la consula
@@ -51,10 +59,32 @@ const getCategoryById = async ( req, res ) => {
     
 }
 
+const removeCategoryById = async ( req, res ) => {
+    const categoryId = req.params.id;
+
+    try {
+        const data = await categoryModel.findByIdAndDelete( categoryId );
+        // const data = await categoryModel.findOneAndDelete({ _id: categoryId });
+
+        // Verifica si la categoria No existe y lanza el respectivo mensaje al cliente
+        if( ! data ) {
+            return res.json({ msg: 'La categoria no se encuentra registrada' });
+        }
+
+        res.json( data );
+    } 
+    catch ( error ) {
+        console.error( error );
+        res.json({ msg: 'Error: No pudo eliminar la categoria' });
+    }
+ 
+}
+
 
 // Exponer las funcionalidades para ser usadas por otros archivos
 export {
     createCategory,
     getAllCategories,
-    getCategoryById
+    getCategoryById,
+    removeCategoryById
 }
