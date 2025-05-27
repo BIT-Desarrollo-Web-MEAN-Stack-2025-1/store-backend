@@ -18,12 +18,42 @@ const createProduct = async ( req, res ) => {
 }
 
 const getAllProducts = async ( req, res ) => {
-    const data = await productModel.find({});
-    res.json( data );
+
+    try {
+        const data = await productModel.find({});
+        res.json( data );        
+    } 
+    catch ( error ) {
+        console.error( error );
+        res.json({ msg: 'Error: No se pudo obtener el listado de productos' });
+    }
+
+}
+
+const getProductById = async ( req, res ) => {
+    const productId = req.params.id;    // El nombre final dependera del nombre del parametro en la ruta
+
+    try {
+        // const data = await productModel.findById( productId );
+        const data = await productModel.findOne({ _id: productId });
+
+        // Verifica si el producto No existe y lanza el respectivo mensaje al cliente
+        if( ! data ) {
+            return res.json({ msg: 'El producto no se encuentra registrado' });
+        }
+
+        res.json( data );
+    } 
+    catch ( error ) {
+        console.error( error );
+        res.json({ msg: 'Error: No se pudo encontrar el producto' });
+    }
+    
 }
 
 // Exponer las funcionalidades para ser usadas por otros archivos
 export {
     createProduct,
-    getAllProducts
+    getAllProducts,
+    getProductById
 }
