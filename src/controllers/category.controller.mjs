@@ -80,11 +80,29 @@ const removeCategoryById = async ( req, res ) => {
  
 }
 
+const updateCategoryById = async ( req, res ) => {
+    const categoryId = req.params.id;       // Obtenemos el ID de la parametrizacion de la ruta
+    const inputData = req.body;             // Obtenemos el body de la peticion
+
+    try {
+        const data = await categoryModel.findByIdAndUpdate( categoryId, inputData, { new: true } );
+        // const data = await categoryModel.findOneAndUpdate({ _id: categoryId }, inputData, { new: true });
+
+        res.json( data );        
+    } 
+    catch ( error ) {
+        console.error( error );
+        res.json({ msg: 'Error: No se pudo actualizar la categoria' });
+    }
+
+}
+
 
 // Exponer las funcionalidades para ser usadas por otros archivos
 export {
     createCategory,
     getAllCategories,
     getCategoryById,
-    removeCategoryById
+    removeCategoryById,
+    updateCategoryById
 }
