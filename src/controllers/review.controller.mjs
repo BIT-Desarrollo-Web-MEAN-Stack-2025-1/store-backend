@@ -12,8 +12,8 @@ const createReview = async ( req, res ) => {
     } 
     catch ( error ) {
 
-        if (error.code === 11000) {
-            // Error por índice único duplicado
+        // Valida Error por índice único duplicado
+        if ( error.code === 11000 ) {
             return res.status( 409 ).json({
                 msg: "El usuario ya ha realizado una reseña para este producto.",
                 fields: error.keyValue
@@ -26,7 +26,34 @@ const createReview = async ( req, res ) => {
 
 }
 
+const getReviewById = async ( req, res ) => {
+    const reviewId = req.params.id;
+
+    try {
+        const data = await reviewModel.findById( reviewId );
+
+        // data == null --> equivale a --> ! data
+        if( ! data ) {
+            return res.json({ msg: 'La reseña no existe' });
+        }
+
+        res.json( data );
+    } 
+    catch ( error ) {
+        console.error( error );
+
+        // Si el ID no es válido (no es un ObjectId), responde con 400
+        if ( error.name === 'CastError' && error.kind === 'ObjectId' ) {
+            return res.status( 400 ).json({ msg: 'ID de reseña no válido' });
+        }
+
+        res.json({ msg: 'Error: No pudo obtener la reseña por ID' });
+    }
+
+}
+
 
 export {
-    createReview
+    createReview,
+    getReviewById
 }
