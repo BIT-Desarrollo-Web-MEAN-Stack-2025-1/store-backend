@@ -52,8 +52,35 @@ const getReviewById = async ( req, res ) => {
 
 }
 
+const deleteReviewById = async ( req, res ) => {
+    const reviewId = req.params.id;
+
+    try {
+        const data = await reviewModel.findByIdAndDelete( reviewId );
+
+        // data == null --> equivale a --> ! data
+        if( ! data ) {
+            return res.status( 404 ).json({ msg: 'La reseña no existe' });
+        }
+
+        res.status( 200 ).json({ msg: 'Reseña eliminada correctamente', data });
+    } 
+    catch ( error ) {
+        console.error( error );
+
+        // Si el ID no es válido (no es un ObjectId), responde con 400
+        if ( error.name === 'CastError' && error.kind === 'ObjectId' ) {
+            return res.status( 400 ).json({ msg: 'ID de reseña no válido' });
+        }
+
+        res.status( 500 ).json({ msg: 'Error: No pudo eliminar la reseña por ID' });
+    }
+
+}
+
 
 export {
     createReview,
-    getReviewById
+    getReviewById,
+    deleteReviewById
 }
