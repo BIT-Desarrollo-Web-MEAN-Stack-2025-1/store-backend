@@ -78,6 +78,7 @@ const deleteReviewById = async ( req, res ) => {
 
 }
 
+// NOTA: No se deberia permitir cambiar de opinión
 const updateReviewById = async (req, res) => {
     const reviewId = req.params.id;
     const updates = req.body;
@@ -113,11 +114,34 @@ const updateReviewById = async (req, res) => {
     }
 };
 
+const getReviewsByProduct = async (req, res) => {
+    const productId = req.params.productId;
+
+    try {
+        const reviews = await reviewModel.find({ product: productId });
+
+        if (!reviews || reviews.length === 0) {
+            return res.status(404).json({ msg: 'No hay reseñas para este producto' });
+        }
+
+        res.json(reviews);
+    } catch (error) {
+        console.error(error);
+
+        if (error.name === 'CastError' && error.kind === 'ObjectId') {
+            return res.status(400).json({ msg: 'ID de producto no válido' });
+        }
+
+        res.status(500).json({ msg: 'Error: No se pudieron obtener las reseñas' });
+    }
+};
+
 
 
 export {
     createReview,
     getReviewById,
     deleteReviewById,
-    updateReviewById
+    updateReviewById,
+    getReviewsByProduct
 }
