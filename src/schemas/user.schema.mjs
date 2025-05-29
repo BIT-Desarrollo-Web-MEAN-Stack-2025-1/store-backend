@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema({
         default: true,
     },
 }, {
-    timestamps: true, // Agrega las propiedades createdAt
+    timestamps: true, // Agrega las propiedades createdAt, updatedAt
     versionKey: false // contador __v de modificaciones del schema
 });
 

@@ -11,7 +11,7 @@ dbConnection();                             // Invocar la base de datos.
 app.use( express.json() );                  // Habilito el interprete de Formato JSON como un Middleware de Express
 
 // Endpoint: http://localhost:3000/
-app.use( user );
+app.use( user );        // Vicular las rutas para la entidad User
 
 
 // listen: Lanzar el servidor en http://localhost:3000
