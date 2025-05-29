@@ -78,9 +78,46 @@ const deleteReviewById = async ( req, res ) => {
 
 }
 
+const updateReviewById = async (req, res) => {
+    const reviewId = req.params.id;
+    const updates = req.body;
+
+    try {
+        const updated = await reviewModel.findByIdAndUpdate(
+            reviewId,
+            updates,
+            { 
+                new: true,              // new: Retorna el documento actualizado
+                runValidators: true     // runValidators: Fuerza a Mongoose a validar los datos actualizados (muy importante si el usuario edita campos como rating)
+            }  
+        );
+
+        if ( ! updated ) {
+            return res.status( 404 ).json({ msg: 'La reseña no existe' });
+        }
+
+        res.status(200).json({ msg: 'Reseña actualizada correctamente', data: updated });
+    } catch (error) {
+        console.error(error);
+
+        if (error.name === 'CastError' && error.kind === 'ObjectId') {
+            return res.status( 400 ).json({ msg: 'ID de reseña no válido' });
+        }
+
+        // Errores de validación: verifica que el error sea específicamente por una violación de las reglas del esquema.
+        if ( error.name === 'ValidationError' ) {
+            return res.status( 400 ).json({ msg: 'Error de validación', errors: error.errors });    // error.errors: objeto detallado que contiene los errores por campo
+        }
+
+        res.status( 500 ).json({ msg: 'Error: No se pudo actualizar la reseña' });
+    }
+};
+
+
 
 export {
     createReview,
     getReviewById,
-    deleteReviewById
+    deleteReviewById,
+    updateReviewById
 }

@@ -20,7 +20,8 @@ const reviewSchema = new mongoose.Schema({
     comment: {
         type: String,
         trim: true,
-        maxlength: [500, 'El comentario no puede tener más de 500 caracteres.']
+        maxlength: [500, 'El comentario no puede tener más de 500 caracteres.'],
+        required: [ true, 'La reseña es obligatoria.' ]
     }
 }, {
     timestamps: true,       // Agrega las propiedades createdAt, updatedAt
