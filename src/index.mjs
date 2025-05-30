@@ -1,6 +1,7 @@
 // const express = require( 'express' );    // Importacion de dependencia usando CommonJS
 import express from 'express';              // Importacion de dependencia usando ESModule
 import user from './routes/user.route.mjs';
+import auth from './routes/auth.router.mjs';
 
 import dbConnection from './config/mongo.config.mjs';   // Importamos la configuracion de la base de datos
 
@@ -12,7 +13,7 @@ app.use( express.json() );                  // Habilito el interprete de Formato
 
 // Endpoint: http://localhost:3000/
 app.use( user );        // Vicular las rutas para la entidad User
-
+app.use( auth );        // Vincula las rutas para la entidad Auth
 
 // listen: Lanzar el servidor en http://localhost:3000
 app.listen( 3000, () => {

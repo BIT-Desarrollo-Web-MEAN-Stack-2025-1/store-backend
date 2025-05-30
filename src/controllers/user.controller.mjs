@@ -1,3 +1,5 @@
+import bcrypt from 'bcrypt';
+
 import userModel from "../schemas/user.schema.mjs";
 
 const createUser = async ( req, res ) => {
@@ -14,10 +16,23 @@ const createUser = async ( req, res ) => {
             return res.status( 404 ).json({ msg: 'No pudo registrarse por que, el usuario ya existe.' });
         }
 
-        // Paso 2: Registrar el usuario
+        // Paso 2: Encriptar la contrasena
+        const salt = bcrypt.genSaltSync();
+        console.log( 'salt: ', salt );          // Genero una cadena aleatoria   
+
+        // Mezclar y generar el hash
+        const hashPassword = bcrypt.hashSync(
+            inputData.password,         // PASSWORD_ORIGINAL
+            salt                        // Cadena aletoria
+        );
+        console.log( 'hashPassword: ', hashPassword );  // HashPassword
+
+        inputData.password = hashPassword;      // Reemplazar el password original por password encriptado
+
+        // Paso 3: Registrar el usuario
         const data = await userModel.create( inputData );
 
-        // Paso 3: Responder al cliente que se registro existosamente
+        // Paso 4: Responder al cliente que se registro existosamente
         res.status( 201 ).json( data );
     } 
     catch ( error ) {
