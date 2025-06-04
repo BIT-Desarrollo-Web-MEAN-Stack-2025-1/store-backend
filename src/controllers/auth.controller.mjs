@@ -1,7 +1,7 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt'; 
 
 import userModel from "../schemas/user.schema.mjs";
+import { generateToken } from '../helpers/jwt.helper.mjs';
 
 // Autenticacion
 const loginUser = async ( req, res ) => {
@@ -31,13 +31,7 @@ const loginUser = async ( req, res ) => {
         role: userFound.role
     };
 
-    const JWT_SECRET = '874th5t645643643y67n4';
-
-    const token = jwt.sign( 
-        payload,                // Carga Util
-        JWT_SECRET,             // Palabra semilla o secreta
-        { expiresIn: '1h' }     // Opciones de configuracion del Token
-    );
+    const token = generateToken( payload );
 
     // Paso 5: Eliminar algunas propiedades que traen datos sensibles
     const objsUser = userFound.toObject();      // Convertir un BJSON en Objeto JavaScript
@@ -56,13 +50,7 @@ const loginUser = async ( req, res ) => {
 const reNewToken = ( req, res ) => {
     const payload = req.authUser;
 
-    const JWT_SECRET = '874th5t645643643y67n4';
-
-    const token = jwt.sign( 
-        payload,                // Carga Util
-        JWT_SECRET,             // Palabra semilla o secreta
-        { expiresIn: '1h' }     // Opciones de configuracion del Token
-    );
+    const token = generateToken( payload );
 
     res.json({ token });
 }
