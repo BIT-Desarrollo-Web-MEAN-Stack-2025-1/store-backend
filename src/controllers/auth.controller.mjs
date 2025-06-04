@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-
 import userModel from "../schemas/user.schema.mjs";
 
 // Autenticacion
@@ -54,7 +53,22 @@ const loginUser = async ( req, res ) => {
     });
 }
 
+const reNewToken = ( req, res ) => {
+    const payload = req.authUser;
+
+    const JWT_SECRET = '874th5t645643643y67n4';
+
+    const token = jwt.sign( 
+        payload,                // Carga Util
+        JWT_SECRET,             // Palabra semilla o secreta
+        { expiresIn: '1h' }     // Opciones de configuracion del Token
+    );
+
+    res.json({ token });
+}
+
 
 export {
-    loginUser
+    loginUser,
+    reNewToken
 }
