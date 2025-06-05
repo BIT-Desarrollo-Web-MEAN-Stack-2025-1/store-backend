@@ -27,8 +27,8 @@ const productSchema = new mongoose.Schema(
         },
         category: {
             // TODO: Vincular con un Id al CategorySchema
-            type: String,
-            default: 'non-category'
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'categories'
         },
         urlImage: {
             type: String,
