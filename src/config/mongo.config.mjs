@@ -9,7 +9,8 @@ const dbConnection = async () => {
         console.log( 'Base de datos inicializada exitosamente ;) ' );
     } 
     catch (error) {
-        console.error( 'Error al inicializar la base datos', error );
+        console.error( 'Error al inicializar la base datos ;( ' );
+        console.error( error );
     }
 
 }

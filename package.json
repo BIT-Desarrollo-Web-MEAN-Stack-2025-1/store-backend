@@ -10,7 +10,9 @@
   "author": "Juan Carlos Jiménez Gutiérrez <jcarlosj.dev@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.0"
   }
 }
