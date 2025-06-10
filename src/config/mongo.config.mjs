@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 
+const DB_URI = process.env.DB_URI ?? 'mongodb://localhost:27017/db-store';
 
 const dbConnection = async () => {
     
     try {
-        await mongoose.connect( 'mongodb://localhost:27017/db-store', {} );
+        await mongoose.connect( DB_URI, {} );
 
         console.log( 'Base de datos inicializada exitosamente ;) ' );
     } 

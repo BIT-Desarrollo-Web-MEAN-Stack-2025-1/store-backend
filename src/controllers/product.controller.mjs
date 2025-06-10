@@ -35,7 +35,7 @@ const getProductById = async ( req, res ) => {
 
     try {
         // const data = await productModel.findById( productId );
-        const data = await productModel.findOne({ _id: productId });
+        const data = await productModel.findOne({ _id: productId }).populate( 'category' );
 
         // Verifica si el producto No existe y lanza el respectivo mensaje al cliente
         if( ! data ) {

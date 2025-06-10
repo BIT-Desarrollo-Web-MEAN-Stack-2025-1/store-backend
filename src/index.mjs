@@ -10,6 +10,7 @@ import review from './routes/review.route.mjs';
 import dbConnection from './config/mongo.config.mjs';   // Importamos la configuracion de la base de datos
 
 const app = express();                      // Invocando la ejecucion de Express
+const PORT = process.env.PORT ?? 3001;
 
 dbConnection();                             // Invocar la base de datos.
 
@@ -24,6 +25,6 @@ app.use( review );      // Implementando las rutas de review
 
 
 // listen: Lanzar el servidor en http://localhost:3000
-app.listen( 3000, () => {
-    console.log( 'Servidor corriendo en http://localhost:3000' );
+app.listen( PORT, () => {
+    console.log( `Servidor corriendo en http://localhost:${ PORT }` );
 } );
