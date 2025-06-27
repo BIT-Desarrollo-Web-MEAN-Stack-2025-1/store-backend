@@ -1,5 +1,6 @@
 // const express = require( 'express' );    // Importacion de dependencia usando CommonJS
 import express from 'express';              // Importacion de dependencia usando ESModule
+import cors from 'cors';
 
 import auth from './routes/auth.router.mjs';
 import product from './routes/product.route.mjs';
@@ -14,6 +15,7 @@ const PORT = process.env.PORT ?? 3001;
 
 dbConnection();                             // Invocar la base de datos.
 
+app.use( cors() );                          // Habilitamos CORS
 app.use( express.json() );                  // Habilito el interprete de Formato JSON como un Middleware de Express
 
 // Endpoint: http://localhost:3000/
