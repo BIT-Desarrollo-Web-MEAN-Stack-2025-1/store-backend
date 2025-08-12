@@ -1,15 +1,26 @@
 import request from 'supertest';
-import app from '../../index.mjs';
-import userModel from '../../schemas/user.schema.mjs';
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
-// Opción 1 — Limpiar la colección antes de cada test
+import app from '../../index.mjs';
+
+
+// Opción 2 — Usar una base de datos en memoria para las pruebas
+let mongoServer;
+
+beforeAll(async () => {
+  mongoServer = await MongoMemoryServer.create();
+  const uri = mongoServer.getUri();
+  await mongoose.connect(uri);
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+  await mongoServer.stop();
+});
+
 beforeEach(async () => {
-    await userModel.deleteMany({});
-    /**
-     * Sí afecta los datos reales si tu conexión en las pruebas apunta a tu base de datos de desarrollo o producción.
-     * Esto borrará todos los documentos de la colección users cada vez que corras las pruebas.
-     * Solo sería seguro si tu MONGO_URI en el entorno de test apunta a una base de datos exclusiva para pruebas, como myapp_test.
-     */
+  await mongoose.connection.db.dropDatabase();
 });
 
 describe('POST /api/auth/register', () => {
