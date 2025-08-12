@@ -32,3 +32,6 @@ app.use( review );      // Implementando las rutas de review
 app.listen( PORT, () => {
     console.log( `Servidor corriendo en http://localhost:${ PORT }` );
 } );
+
+
+export default app

@@ -8,12 +8,15 @@ const createUser = async ( req, res ) => {
     try {
         // Paso 1: Verificar si el usuario existe
         const userFound = await userModel.findOne({ 
-            username: inputData.username,
-            email: inputData.email
+            $or: [
+                { username: inputData.username },
+                { email: inputData.email }
+            ]
         });
 
         if( userFound ) {
-            return res.status( 404 ).json({ msg: 'No pudo registrarse por que, el usuario ya existe.' });
+            // Para duplicados lo correcto es 409
+            return res.status( 409 ).json({ msg: 'No pudo registrarse por que, el usuario ya existe.' });
         }
 
         // Paso 2: Encriptar la contrasena
@@ -30,7 +33,14 @@ const createUser = async ( req, res ) => {
         inputData.password = hashPassword;      // Reemplazar el password original por password encriptado
 
         // Paso 3: Registrar el usuario
-        const data = await userModel.create( inputData );
+        const userCreated = await userModel.create( inputData );
+
+        // Paso 5: Convertir a objeto plano y eliminar campos sensibles
+        const data = userCreated.toObject();
+        delete data.password;
+        delete data.createdAt;
+        delete data.updatedAt;
+        delete data.__v; // Opcional: eliminar versión de Mongoose
 
         // Paso 4: Responder al cliente que se registro existosamente
         res.status( 201 ).json( data );
