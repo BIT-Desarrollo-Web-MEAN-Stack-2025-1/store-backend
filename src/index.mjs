@@ -9,12 +9,15 @@ import user from './routes/user.route.mjs';
 import review from './routes/review.route.mjs';
 import test from './routes/test.router.mjs';
 
-import dbConnection from './config/mongo.config.mjs';   // Importamos la configuracion de la base de datos
+import { dbConnection } from './config/mongo.config.mjs';   // Importamos la configuracion de la base de datos
 
 const app = express();                      // Invocando la ejecucion de Express
 const PORT = process.env.PORT || 3000;
 
-dbConnection();                             // Invocar la base de datos.
+// Conectar a la base de datos solo si no estamos en test
+if ( process.env.NODE_ENV !== 'testing' ) {
+    dbConnection();                             // Invocar la base de datos.
+}
 
 app.use( cors() );                          // Habilitamos CORS
 app.use( express.json() );                  // Habilito el interprete de Formato JSON como un Middleware de Express

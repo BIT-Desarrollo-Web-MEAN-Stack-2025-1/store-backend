@@ -6,8 +6,10 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file .env --watch ./src/index.mjs",
-    "test": "set NODE_OPTIONS=--experimental-vm-modules && jest --forceExit --detectOpenHandles --watchAll",
-    "test:unix": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js --forceExit --detectOpenHandles --watchAll=true"
+    "test:unix": "NODE_OPTIONS=--experimental-vm-modules node --env-file .env.test node_modules/jest/bin/jest.js --forceExit --detectOpenHandles",
+    "test:unix:watch": "NODE_OPTIONS=--experimental-vm-modules node --env-file .env.test node_modules/jest/bin/jest.js --watchAll --forceExit --detectOpenHandles",
+    "test:windows": "set NODE_OPTIONS=--experimental-vm-modules && node --env-file .env.test node_modules/jest/bin/jest.js --forceExit --detectOpenHandles",
+    "test:windows:watch": "set NODE_OPTIONS=--experimental-vm-modules && node --env-file .env.test node_modules/jest/bin/jest.js --watchAll --forceExit --detectOpenHandles"
   },
   "author": "Juan Carlos Jiménez Gutiérrez <jcarlosj.dev@gmail.com>",
   "license": "ISC",
