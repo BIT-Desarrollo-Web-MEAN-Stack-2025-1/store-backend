@@ -51,4 +51,17 @@ describe('Validaciones de UserSchema', () => {
             expect(error.errors.email.message).toBe('Por favor, introduce un correo electrónico válido.');
         }
     });
+
+    test('Debe validar correctamente si todos los campos son correctos', async () => {
+        const user = new userModel({
+            name: 'Manuela Gomez',
+            username: 'manu',
+            email: 'manuela@correo.co',
+            password: '123456',
+            role: 'registered'
+        });
+
+        // Si no lanza error, la prueba pasa
+        await expect(user.validate()).resolves.toBeUndefined();
+    });
 });
