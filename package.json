@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file .env --watch ./src/index.mjs",
-    "test": "jest"
+    "test:bash": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:cmd": "set NODE_OPTIONS=--experimental-vm-modules && jest",
+    "test:powershell": "$env:NODE_OPTIONS='--experimental-vm-modules'; jest"
   },
   "author": "Juan Carlos Jiménez Gutiérrez <jcarlosj.dev@gmail.com>",
   "license": "ISC",
