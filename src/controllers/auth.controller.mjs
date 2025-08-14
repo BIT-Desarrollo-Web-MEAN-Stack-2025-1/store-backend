@@ -51,6 +51,11 @@ const registerUser = async ( req, res ) => {
     const inputData = req.body;
 
     try {
+        // Paso 0: Validación manual de campos requeridos
+        if (!inputData.name || !inputData.password || !inputData.username || !inputData.email) {
+            return res.status(400).json({ msg: 'Error: Campos obligatorios faltantes' });
+        }
+
         // Paso 1: Verificar si el usuario existe
         const userFound = await userModel.findOne({ 
             $or: [

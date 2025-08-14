@@ -6,6 +6,11 @@ const createUser = async ( req, res ) => {
     const inputData = req.body;
 
     try {
+        // Paso 0: Validación manual de campos requeridos
+        if (!inputData.name || !inputData.password || !inputData.username || !inputData.email) {
+            return res.status(400).json({ msg: 'Error: Campos obligatorios faltantes' });
+        }
+
         // Paso 1: Verificar si el usuario existe
         const userFound = await userModel.findOne({ 
             $or: [
@@ -45,7 +50,7 @@ const createUser = async ( req, res ) => {
         // Paso 4: Responder al cliente que se registro existosamente
         res.status( 201 ).json( data );
     } 
-    catch ( error ) {
+    catch ( error ) {       
         console.error( error );
         res.status( 500 ).json({ msg: 'Error: No se pudo crear el usuario' });
     }

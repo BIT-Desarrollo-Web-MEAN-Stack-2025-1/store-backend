@@ -27,8 +27,8 @@ const userSchema = new mongoose.Schema({
         trim: true,
         // min: [ 6, 'La contrasena debe tener al menos 6 caracteres' ],
         // max: [ 12, 'La contrasena debe tener maxico 12 caracteres' ],
-        required: [ true, 'La contrasena es obligatoria' ],
-        select: false // Esto evita que el campo se devuelva en las consultas
+        // required: [ true, 'La contrasena es obligatoria' ],
+        select: false // Esto evita que el campo se devuelva en las consultas,
     },
     role: {
         type: String,
@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
             values: ['super-admin', 'admin', 'colaborator', 'registered'],
             message: 'El rol {VALUE} no es válido. Los roles permitidos son: super administrador, administrador, colaborador, usuario registrado.'
         },
-        default: 'registered' // Cambiado a 'registrado' para mayor coherencia con los roles definidos
+        default: 'registered', // Cambiado a 'registrado' para mayor coherencia con los roles definidos
     },
     isActive: {
         type: Boolean,
