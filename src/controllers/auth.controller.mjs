@@ -97,6 +97,17 @@ const registerUser = async ( req, res ) => {
     } 
     catch ( error ) {
         console.error( error );
+        
+        // Error de duplicado
+        if (error.code === 11000) {
+            return res.status(409).json({ msg: 'No pudo registrarse por que, el usuario ya existe.' });
+        }
+
+        // Error de validación de mongoose
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ msg: 'Error: Campos obligatorios faltantes' });
+        }
+
         res.status( 500 ).json({ msg: 'Error: No se pudo crear el usuario' });
     }
 

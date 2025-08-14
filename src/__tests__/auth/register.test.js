@@ -90,6 +90,7 @@ describe('POST /api/auth/register', () => {
         // Faltan los campos 'name' y 'password'
         delete testUser.name;
         delete testUser.password;
+        delete testUser.role;
 
         const res = await request( app )
             .post( '/api/auth/register' )
