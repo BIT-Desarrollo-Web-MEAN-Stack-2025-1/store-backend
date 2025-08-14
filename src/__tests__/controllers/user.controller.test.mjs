@@ -39,7 +39,7 @@ describe('Validaciones de UserSchema', () => {
         const user = new userModel({
             name: 'Manuela',
             username: 'manu',
-            email: 'correo.co', // Email inválido
+            email: 'manuela@correo.co', // Email inválido
             password: '123456',
             role: 'registered'
         });
@@ -50,6 +50,18 @@ describe('Validaciones de UserSchema', () => {
             expect(error.errors.email).toBeDefined();
             expect(error.errors.email.message).toBe('Por favor, introduce un correo electrónico válido.');
         }
+    });
+
+    test( 'Deberia fallar si el campo "role" es invalido', async () => {
+        const user = new userModel({
+            name: 'Manuela',
+            username: 'manu',
+            email: 'manuela@correo.co',
+            password: '123456',
+            role: 'invalid-role' // Rol inválido
+        });
+
+        await expect(user.validate()).rejects.toThrow();
     });
 
     test('Debe validar correctamente si todos los campos son correctos', async () => {
