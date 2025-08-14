@@ -5,7 +5,8 @@
   "main": "index.mjs",
   "type": "module",
   "scripts": {
-    "dev": "node --env-file .env --watch ./src/index.mjs"
+    "dev": "node --env-file .env --watch ./src/index.mjs",
+    "test": "jest"
   },
   "author": "Juan Carlos Jiménez Gutiérrez <jcarlosj.dev@gmail.com>",
   "license": "ISC",
@@ -15,5 +16,11 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.0"
-  }
+  },
+  "devDependencies": {
+    "jest": "^30.0.5"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  } 
 }
