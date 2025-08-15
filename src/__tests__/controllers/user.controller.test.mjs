@@ -54,6 +54,50 @@ describe('Validacion directa de UserSchema', () => {
         }
     });
 
+
+    test( 'Debe fallar si la contraseña es demasiado corta', async () => {
+        const user = new userModel({
+            name: 'Manuela',
+            username: 'manu',
+            email: 'manuela@correo.co',     
+            password: '12345',              // 👈  Contraseña con menos de 6 caracteres para provocar el error
+            role: 'registered'
+        });
+
+        let error;
+        try {
+            await user.validate();
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.errors.password).toBeDefined();
+        expect(error.errors.password.message).toBe('La contrasena debe tener al menos 6 caracteres');
+    });
+
+    test( 'Debe fallar si la contraseña es demasiado larga', async () => {
+        const user = new userModel({
+            name: 'Manuela',
+            username: 'manu',
+            email: 'manuela@correo.co',     
+            password: '123456789101112',              // 👈  Contraseña con más de 12 caracteres para provocar el error
+            role: 'registered'
+        });
+
+        let error;
+            
+        try {
+            await user.validate();
+        } catch ( err ) {
+            error = err;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.errors.password).toBeDefined();
+        expect(error.errors.password.message).toBe('La contrasena debe tener maxico 12 caracteres');
+    });
+
     test( 'Deberia fallar si el campo "role" es invalido', async () => {
         const user = new userModel({
             name: 'Manuela',

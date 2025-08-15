@@ -25,8 +25,8 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         trim: true,
-        // min: [ 6, 'La contrasena debe tener al menos 6 caracteres' ],
-        // max: [ 12, 'La contrasena debe tener maxico 12 caracteres' ],
+        minlength: [ 6, 'La contrasena debe tener al menos 6 caracteres' ],
+        maxlength: [ 12, 'La contrasena debe tener maxico 12 caracteres' ],
         required: [ true, 'La contrasena es obligatoria' ]
     },
     role: {
