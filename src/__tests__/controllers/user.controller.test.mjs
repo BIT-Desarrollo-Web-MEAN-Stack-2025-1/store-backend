@@ -35,7 +35,6 @@ describe('Validacion directa de UserSchema', () => {
         }
     } );
     
-
     test( 'Debe fallar si el campo "email" es inválido', async () => {
         const user = new userModel({
             name: 'Manuela',
@@ -78,7 +77,32 @@ describe('Validacion directa de UserSchema', () => {
         await expect(user.validate()).resolves.toBeUndefined();
     });
 
-     test('Debe crear un usuario válido (mongodb-memory-server)', async () => {
+    test('Debe lanzar error si faltan campos obligatorios', async () => {
+        // Creamos un usuario con datos incompletos (faltan email y password)
+        const user = new userModel({
+            name: 'Manuela Gomez',
+            username: 'manu',
+            role: 'registered'
+        });
+
+        let error;
+        
+        try {
+            await user.save();      // Intentamos guardar el usuario. Mongoose está interactuando con la base de datos que levantó mongodb-memory-server
+        } catch ( err ) {
+            error = err;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.errors).toBeDefined();
+        expect(error.name).toBe('ValidationError');
+    
+        // Verificamos que los campos faltantes estén en el error
+        expect(error.errors).toHaveProperty('email');
+        expect(error.errors).toHaveProperty('password');
+    });
+
+    test('Debe crear un usuario válido (mongodb-memory-server)', async () => {
         // Creamos un usuario que cumple todas las validaciones
         const user = new userModel({
             name: 'Manuela Gomez',
@@ -89,7 +113,7 @@ describe('Validacion directa de UserSchema', () => {
         });
 
         // Guardamos en Mongo en memoria
-        const savedUser = await user.save();
+        const savedUser = await user.save();    // Intentamos guardar el usuario. Mongoose está interactuando con la base de datos que levantó mongodb-memory-server
 
         // Validaciones
         expect(savedUser).toBeDefined();
