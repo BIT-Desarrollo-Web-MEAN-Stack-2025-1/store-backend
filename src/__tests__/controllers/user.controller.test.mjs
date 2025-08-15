@@ -146,4 +146,39 @@ describe('Validacion directa de UserSchema', () => {
             expect(error.errors.email.message).toMatch("Por favor, introduce un correo electrónico válido.");   // Verificamos que el mensaje de error sea el esperado
         }
     });
+
+    test( 'Debe fallar si el email ya existe', async () => {
+        // Insertar un usuario válido
+        const userData1 = new userModel({
+            name: 'Manuela Gomez',
+            username: 'manu',
+            email: 'manuela@correo.co',
+            password: '123456',
+            role: 'registered'
+        });
+
+        await userData1.save();
+
+        // Intentar insertar otro con el mismo email
+        const userData2 = new userModel({
+            name: 'Manuela Gomez',
+            username: 'manuelita',          // 👈 Cambiamos el username para que no choque con el anterior
+            email: 'manuela@correo.co',     // 👈 Mantenemos el mismo email para provocar el error
+            password: '123456',
+            role: 'registered'
+        });
+
+        // Verificar que lance error
+        let error;
+        
+        try {
+            await userData2.save();
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.code).toBe(11000); // Código de error de índice único en MongoDB
+        expect(error.keyPattern).toHaveProperty('email');
+    });
 });
