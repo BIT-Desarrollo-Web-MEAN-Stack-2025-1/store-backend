@@ -1,7 +1,8 @@
 import { expect, jest, test } from '@jest/globals';
 import userModel from '../../schemas/user.schema.mjs'; // Importa el modelo de usuario
 
-describe('Validaciones de UserSchema', () => {
+
+describe('Validacion directa de UserSchema', () => {
     test( 'Debe fallar si falta el campo "name"', async () => {
         const user = new userModel({
             username: 'manu',
@@ -75,5 +76,27 @@ describe('Validaciones de UserSchema', () => {
 
         // Si no lanza error, la prueba pasa
         await expect(user.validate()).resolves.toBeUndefined();
+    });
+
+     test('Debe crear un usuario válido (mongodb-memory-server)', async () => {
+        // Creamos un usuario que cumple todas las validaciones
+        const user = new userModel({
+            name: 'Manuela Gomez',
+            username: 'manu',
+            email: 'manuela@correo.co',
+            password: '123456',
+            role: 'registered'
+        });
+
+        // Guardamos en Mongo en memoria
+        const savedUser = await user.save();
+
+        // Validaciones
+        expect(savedUser).toBeDefined();
+        expect(savedUser._id).toBeDefined();
+        expect(savedUser.name).toBe('Manuela Gomez');
+        expect(savedUser.username).toBe('manu');
+        expect(savedUser.email).toBe('manuela@correo.co');
+        expect(savedUser.role).toBe('registered');
     });
 });
