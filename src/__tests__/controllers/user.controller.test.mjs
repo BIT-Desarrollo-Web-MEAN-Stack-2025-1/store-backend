@@ -181,4 +181,39 @@ describe('Validacion directa de UserSchema', () => {
         expect(error.code).toBe(11000); // Código de error de índice único en MongoDB
         expect(error.keyPattern).toHaveProperty('email');
     });
+
+    test( 'Debe fallar si el username ya existe', async () => {
+        // 1. Crear y guardar un usuario con un username específico
+        const existingUser = new userModel({
+            name: 'Manuela Gomez',
+            username: 'manu',
+            email: 'manuela@correo.co',
+            password: '123456',
+            role: 'registered'
+        });
+        await existingUser.save();
+
+        // 2. Intentar crear un usuario con el mismo username
+        const duplicateUser = new userModel({
+            name: 'Manuela Gomez',
+            username: 'manu',                   // 👈 Mantenemos el mismo username para provocar el error
+            email: 'manu.gomez@correo.co',      // 👈 Cambiamos el email para que no choque con el anterior
+            password: '123456',
+            role: 'registered'
+        });
+
+        let error;
+        try {
+            await duplicateUser.save();
+        } catch (err) {
+            error = err;
+        }
+
+        // 3. Verificar que el error fue arrojado y que es por duplicado
+        expect(error).toBeDefined();
+        expect(error.name).toBe('MongoServerError');
+        expect(error.code).toBe(11000);
+        expect(error.keyPattern).toHaveProperty('username', 1);
+    });
+
 });
