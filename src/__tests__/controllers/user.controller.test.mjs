@@ -1,4 +1,6 @@
 import { expect, jest, test } from '@jest/globals';
+import mongoose from 'mongoose';
+
 import userModel from '../../schemas/user.schema.mjs'; // Importa el modelo de usuario
 
 
@@ -122,5 +124,26 @@ describe('Validacion directa de UserSchema', () => {
         expect(savedUser.username).toBe('manu');
         expect(savedUser.email).toBe('manuela@correo.co');
         expect(savedUser.role).toBe('registered');
+    });
+
+    test( 'Debe dar un error si el email no tiene un formato válido', async () => {
+        const userData = {
+            name: 'Manuela Gomez',
+            username: 'manu',
+            email: 'manuela-correo-co',
+            password: '123456',
+            role: 'registered'
+        };
+
+        try {
+            const user = new userModel(userData);                                       // Creamos un nuevo usuario con el modelo
+            await user.save();                                                          // Intentamos guardar el usuario. Mongoose está interactuando con la base de datos que levantó mongodb-memory-server
+
+            throw new Error('La validación debería haber fallado');                     // Si llegamos aquí, significa que la validación no falló como se esperaba
+        } catch (error) {
+            expect(error).toBeInstanceOf( mongoose.Error.ValidationError );             // Verificamos que el error sea una instancia de ValidationError
+            expect(error.errors.email).toBeDefined();                                   // Verificamos que el error tenga un campo 'email'
+            expect(error.errors.email.message).toMatch("Por favor, introduce un correo electrónico válido.");   // Verificamos que el mensaje de error sea el esperado
+        }
     });
 });
