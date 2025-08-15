@@ -45,6 +45,7 @@ afterAll(async () => {
   // Cerramos la conexión y detenemos el servidor
   await mongoose.connection.dropDatabase();   // Elimina la base de datos para limpiar todo. Borra toda la base de datos.
   await mongoose.connection.close();          // Cierra la conexión de Mongoose.  Cierra la conexión de Mongoose con el servidor Mongo en memoria.
+  await mongoose.disconnect();                // Desconecta Mongoose. Desconecta Mongoose.
   await mongoServer.stop();                   // Detiene el servidor Mongo en memoria. Detiene el servidor Mongo en memoria.      
 
 });

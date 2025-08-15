@@ -6,10 +6,10 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file .env --watch ./src/index.mjs",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:bash": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:cmd": "set NODE_OPTIONS=--experimental-vm-modules && jest",
-    "test:powershell": "$env:NODE_OPTIONS='--experimental-vm-modules'; jest"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --verbose",
+    "test:bash": "NODE_OPTIONS=--experimental-vm-modules jest --verbose",
+    "test:cmd": "set NODE_OPTIONS=--experimental-vm-modules && jest --verbose",
+    "test:powershell": "$env:NODE_OPTIONS='--experimental-vm-modules'; jest --verbose"
   },
   "author": "Juan Carlos Jiménez Gutiérrez <jcarlosj.dev@gmail.com>",
   "license": "ISC",
