@@ -34,6 +34,22 @@ describe('Validacion directa a UserModel', () => {
         }
     } );
 
+    test( 'Debe lanzar error si falta el campo "username"', async () => {
+        const user = new userModel({
+            name: 'Manuela',
+            email: 'manuela@correo.co',
+            password: '123456',
+            role: 'registered'
+        });
+
+        try {
+            await user.validate();
+        } catch (error) {
+            expect(error.errors.username).toBeDefined();
+            expect(error.errors.username.message).toBe('El nombre de usuario es obligatorio.');
+        }
+    } );
+
     test( 'Debe lanzar error si el campo "email" es inválido', async () => {
         const user = new userModel({
             name: 'Manuela',
