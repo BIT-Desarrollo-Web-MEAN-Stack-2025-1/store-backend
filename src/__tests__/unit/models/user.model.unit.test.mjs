@@ -214,6 +214,29 @@ describe('Validacion directa a UserModel', () => {
         }
     });
 
+    // Funcion para desplegar un título personalizado en las pruebas agrupadas del campo "password
+    function title({ password, valido }) {
+        return `Password "${password}" debe ser ${valido ? 'válido' : 'inválido'}`;
+    }
+
+    // Pruebas agrupadas para el campo "password" del modelo de usuario con título personalizad
+    test.each([
+        { password: '123456', valido: true },
+        { password: '123456789012', valido: true }
+    ])(
+        title,
+        async ({ password, valido }) => {
+            const user = new userModel({ username: 'test', email: 'test@test.com', password });
+            const error = user.validateSync();
+
+            if (valido) {
+                expect(error?.errors?.password).toBeUndefined();
+            } else {
+                expect(error?.errors?.password?.message).toMatch(/password/i);
+            }
+        }
+    );
+
     // Funcion para pruebas agrupadas para el campo "password" del modelo de usuario version compacta
     function validatePassword(password) {
         if (password.length < 6) {
@@ -259,8 +282,74 @@ describe('Validacion directa a UserModel', () => {
         await expect(user.validate()).rejects.toThrow();
     });
 
+    // Pruebas para el campo "role" del modelo de usuario permitiendo los roles válidos
+    test.each([
+        'super-admin',
+        'admin',
+        'colaborator',
+        'registered',
+    ])('debe aceptar el rol permitido "%s"', async (validRole) => {
+        const user = new userModel({
+            name: 'Manuela Gomez',
+            username: 'manu',
+            email: `${validRole}@correo.co`,
+            password: '123456789',
+            role: validRole,
+        });
+
+        const savedUser = await user.save();
+
+        expect(savedUser.role).toBe(validRole);
+    });
+
+    // Pruebas para el campo "role" del modelo de usuario asignando un rol por defecto
+    test( 'debe asignar "registered" como rol por defecto si no se especifica', async () => {
+        const user = new userModel({
+            name: 'Manuela Gomez',
+            username: 'manu',
+            email: 'manuela@correo.co',
+            password: '123456789'
+            // 👈 No especificamos el rol, debería asignarse 'registered' por defecto
+        });
+
+        await user.validate(); // valida el schema sin guardarlo
+
+        expect(user.role).toBe('registered');
+    });
+
+    test( 'Debe asignar true por defecto si no se especifica "isActive"', async () => {
+        const user = new userModel({
+            name: 'Manuela Gomez',
+            username: 'manu',
+            email: 'manuela@correo.co',
+            password: '123456789',
+            role: 'registered'
+            // 👈 No especificamos isActive, debería asignarse true por defecto
+        });
+
+        
+        expect(user.isActive).toBe(true);               // ✅ Aserción 1: valor por defecto
+        expect(typeof user.isActive).toBe('boolean');   // ✅ Aserción 2: verificar que sea booleano
+    });
+
+    // Pruebas para timestamps (createdAt, updatedAt)
+    test( 'Debe tener timestamps (createdAt, updatedAt)', async () => {
+        const user = new userModel({
+            name: 'Manuela Gomez',
+            username: 'manu',
+            email: 'manuela@correo.co',
+            password: '123456',
+            role: 'registered'
+        });
+
+        await user.save();
+
+        expect(user).toHaveProperty('createdAt'); // ✅  Aserción 1: Verifica timestamp
+        expect(user).toHaveProperty('updatedAt'); // ✅  Aserción 2: Verifica timestamp
+    });
+
     // Pruebas para todos los campos validos del modelo de usuario
-    test('Debe pasar si todos los campos son validos', async () => {
+    test(' Debe pasar si todos los campos son validos', async () => {
         const user = new userModel({
             name: 'Manuela Gomez',
             username: 'manu',
