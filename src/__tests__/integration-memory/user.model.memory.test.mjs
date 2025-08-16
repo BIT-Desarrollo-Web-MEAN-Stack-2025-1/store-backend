@@ -1,6 +1,7 @@
 /** Las pruebas estan enfocadas a testear el modelo de usuario con MongoDB Memory Server, para aislar y validar operaciones sin depender de la base de datos real */
 import mongoose from "mongoose";
 import userModel from "../../schemas/user.schema.mjs";
+import e from "cors";
 
 describe( 'Validacion a UserModel usando "MongoDB Memory Server"', () => {
 
@@ -79,7 +80,9 @@ describe( 'Validacion a UserModel usando "MongoDB Memory Server"', () => {
 
         expect(error).toBeDefined();
         expect(error.code).toBe(11000); // Código de error de índice único en MongoDB
+        expect(error).toHaveProperty('code', 11000);
         expect(error.keyPattern).toHaveProperty('email');
+        expect(error.message).toMatch('E11000 duplicate key error collection: test.users index: email_1 dup key: { email: \"manuela@correo.co\" }');
     });
 
     test( 'Debe fallar si el username ya existe', async () => {

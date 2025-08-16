@@ -18,14 +18,14 @@ const createUser = async ( req, res ) => {
 
         // Paso 2: Encriptar la contrasena
         const salt = bcrypt.genSaltSync();
-        console.log( 'salt: ', salt );          // Genero una cadena aleatoria   
+        // console.log( 'salt: ', salt );          // Genero una cadena aleatoria   
 
         // Mezclar y generar el hash
         const hashPassword = bcrypt.hashSync(
             inputData.password,         // PASSWORD_ORIGINAL
             salt                        // Cadena aletoria
         );
-        console.log( 'hashPassword: ', hashPassword );  // HashPassword
+        // console.log( 'hashPassword: ', hashPassword );  // HashPassword
 
         inputData.password = hashPassword;      // Reemplazar el password original por password encriptado
 
