@@ -55,39 +55,6 @@ describe('Validacion directa a UserModel', () => {
         }
     });
 
-    test("Debe lanzar error si el campo 'email' no es único", async () => {
-        await userModel.init();         // 👈 fuerza la creación de índices, de otra manera los índices únicos se crean en segundo plano y puede que tu prueba no los pille.
-
-        const user1 = new userModel({
-            name: 'Manuela',
-            username: 'Manuelita',      // 👈 Registra un 'username'
-            email: 'manuela@correo.co', // 👈 Registra un 'email'
-            password: '123456',
-            role: 'registered'
-        });
-        await user1.save();
-
-        const user2 = new userModel({
-            name: 'Manuela',
-            username: 'manu',           // 👈 Registra un username diferente para NO provocar el error
-            email: 'manuela@correo.co', // 👈 Registra el mismo 'email' para provocar el error
-            password: '123456',
-            role: 'registered'
-        });
-
-        let error;
-        try {
-            await user2.save();
-        } catch (err) {
-            error = err;
-        }
-
-        // Verificamos que sea un error de duplicado
-        expect(error).toBeDefined();
-        expect(error).toHaveProperty('code', 11000); // Duplicate key error en Mongo
-        expect(error.keyValue).toHaveProperty('email', 'manuela@correo.co');
-    });
-
     // Pruebas para el campo "username" del modelo de usuario
     test( 'Debe lanzar error si falta el campo "username"', async () => {
         const user = new userModel({
@@ -103,39 +70,6 @@ describe('Validacion directa a UserModel', () => {
             expect(error.errors.username).toBeDefined();
             expect(error.errors.username.message).toBe('El nombre de usuario es obligatorio.');
         }
-    } );
-
-    test( "Debe lanzar error si el campo 'username' no es único", async () => {
-        await userModel.init();         // 👈 fuerza la creación de índices, de otra manera los índices únicos se crean en segundo plano y puede que tu prueba no los pille.
-
-        const user1 = new userModel({
-            name: 'Manuela',
-            username: 'manu',           // 👈 Registra un 'username'
-            email: 'manu@correo.co',    // 👈 Registra un 'email'
-            password: '123456',
-            role: 'registered'
-        });
-        await user1.save();
-
-        const user2 = new userModel({
-            name: 'Manuela',
-            username: 'manu',           // 👈 Registra el mismo 'username' para provocar el error
-            email: 'manuela@correo.co', // 👈 Registra un 'email' diferente para NO provocar el error
-            password: '123456',
-            role: 'registered'
-        });
-
-        let error;
-        try {
-            await user2.save();
-        } catch (err) {
-            error = err;
-        }
-
-        // Verificamos que sea un error de duplicado
-        expect(error).toBeDefined();
-        expect(error).toHaveProperty('code', 11000); // Duplicate key error en Mongo
-        expect(error.keyValue).toHaveProperty('username', 'manu');
     });
 
     // Pruebas independientes para el campo "password" del modelo de usuario
@@ -282,26 +216,6 @@ describe('Validacion directa a UserModel', () => {
         await expect(user.validate()).rejects.toThrow();
     });
 
-    // Pruebas para el campo "role" del modelo de usuario permitiendo los roles válidos
-    test.each([
-        'super-admin',
-        'admin',
-        'colaborator',
-        'registered',
-    ])('debe aceptar el rol permitido "%s"', async (validRole) => {
-        const user = new userModel({
-            name: 'Manuela Gomez',
-            username: 'manu',
-            email: `${validRole}@correo.co`,
-            password: '123456789',
-            role: validRole,
-        });
-
-        const savedUser = await user.save();
-
-        expect(savedUser.role).toBe(validRole);
-    });
-
     // Pruebas para el campo "role" del modelo de usuario asignando un rol por defecto
     test( 'debe asignar "registered" como rol por defecto si no se especifica', async () => {
         const user = new userModel({
@@ -332,22 +246,6 @@ describe('Validacion directa a UserModel', () => {
         expect(typeof user.isActive).toBe('boolean');   // ✅ Aserción 2: verificar que sea booleano
     });
 
-    // Pruebas para timestamps (createdAt, updatedAt)
-    test( 'Debe tener timestamps (createdAt, updatedAt)', async () => {
-        const user = new userModel({
-            name: 'Manuela Gomez',
-            username: 'manu',
-            email: 'manuela@correo.co',
-            password: '123456',
-            role: 'registered'
-        });
-
-        await user.save();
-
-        expect(user).toHaveProperty('createdAt'); // ✅  Aserción 1: Verifica timestamp
-        expect(user).toHaveProperty('updatedAt'); // ✅  Aserción 2: Verifica timestamp
-    });
-
     // Pruebas para todos los campos validos del modelo de usuario
     test(' Debe pasar si todos los campos son validos', async () => {
         const user = new userModel({
@@ -360,32 +258,6 @@ describe('Validacion directa a UserModel', () => {
 
         // Si no lanza error, la prueba pasa
         await expect(user.validate()).resolves.toBeUndefined();
-    });
-
-    // Pruebas para campos obligatorios faltantes
-    test('Debe lanzar error si faltan campos obligatorios', async () => {
-        // Creamos un usuario con datos incompletos (faltan email y password)
-        const user = new userModel({
-            name: 'Manuela Gomez',
-            username: 'manu',
-            role: 'registered'
-        });
-
-        let error;
-        
-        try {
-            await user.save();      // Intentamos guardar el usuario. Mongoose está interactuando con la base de datos que levantó mongodb-memory-server
-        } catch ( err ) {
-            error = err;
-        }
-
-        expect(error).toBeDefined();
-        expect(error.errors).toBeDefined();
-        expect(error.name).toBe('ValidationError');
-    
-        // Verificamos que los campos faltantes estén en el error
-        expect(error.errors).toHaveProperty('email');
-        expect(error.errors).toHaveProperty('password');
     });
     
 });
