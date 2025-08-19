@@ -1,14 +1,18 @@
 function addListOfNotes(listOfNotes) {
+    if (!Array.isArray(listOfNotes)) {
+        throw new TypeError('El argumento debe ser un arreglo');
+    }
+
     let total = 0;
 
     for (let i = 0; i < listOfNotes.length; i++) {
         const note = listOfNotes[i];
 
-        // Validamos que el elemento sea un objeto y tenga una finalNote numérica
+        // Validamos que sea objeto y tenga finalNote numérico
         if (note && typeof note === 'object' && typeof note.finalNote === 'number') {
             total += note.finalNote;
         } else {
-            console.warn(`Elemento no válido encontrado en posición ${i}:`, note);
+            throw new TypeError(`Elemento no válido en posición ${i}: se esperaba un objeto con finalNote numérico`);
         }
     }
 

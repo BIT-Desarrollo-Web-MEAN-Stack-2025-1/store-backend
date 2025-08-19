@@ -17,6 +17,30 @@ describe( 'Note Operations', () => {
         expect(total).toBeCloseTo(17.1, 5);     // 5 = cantidad de decimales de precisión
     } );
 
+    it('Debe lanzar error si el argumento no es un arreglo', () => {
+        expect(() => addListOfNotes("no-array")).toThrow(TypeError);
+        expect(() => addListOfNotes("no-array")).toThrow('El argumento debe ser un arreglo');
+    });
+
+    it('Debe lanzar error si algún elemento no es un objeto válido', () => {
+        const notes = [
+            { finalNote: 3.5 },
+            null,
+            { finalNote: 4.0 }
+        ];
+        expect(() => addListOfNotes(notes)).toThrow(TypeError);
+        expect(() => addListOfNotes(notes)).toThrow('Elemento no válido en posición 1');
+    });
+
+    it('Debe lanzar error si finalNote no es numérico', () => {
+        const notes = [
+            { finalNote: 3.5 },
+            { finalNote: "4.0" }
+        ];
+        expect(() => addListOfNotes(notes)).toThrow(TypeError);
+        expect(() => addListOfNotes(notes)).toThrow('Elemento no válido en posición 1');
+    });
+
     it('Debe calcular el promedio correctamente con números válidos', () => {
         expect(calculateAverage(10, 2)).toBe(5);
         expect(calculateAverage(7.5, 3)).toBeCloseTo(2.5);
