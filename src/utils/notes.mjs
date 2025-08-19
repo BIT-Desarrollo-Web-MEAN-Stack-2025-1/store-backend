@@ -16,6 +16,13 @@ function addListOfNotes(listOfNotes) {
 }
 
 function calculateAverage ( total, numberOfNotes ) {
+    if (numberOfNotes === 0) {
+        return 0; // Evita división por cero
+    }
+    if (typeof total !== 'number' || typeof numberOfNotes !== 'number') {
+        throw new TypeError('Ambos argumentos deben ser números');
+    }
+
     return total / numberOfNotes;
 }
 
