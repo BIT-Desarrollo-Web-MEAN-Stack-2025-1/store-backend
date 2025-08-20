@@ -63,14 +63,14 @@ const getUserById = async ( req, res ) => {
 
         // data == null --> equivale a --> ! data
         if( ! data ) {
-            return res.json({ msg: 'Usuario no registrado' });
+            return res.status(404).json({ msg: 'Usuario no registrado' });
         }
 
         res.json( data );
     } 
     catch ( error ) {
-        console.error( error );
-        res.json({ msg: 'Error: No pudo obtener el usuario por ID' });
+        // console.error( error );
+        res.status( 500 ).json({ msg: 'Error: No pudo obtener el usuario por ID' });
     }
 
 }
