@@ -5,7 +5,11 @@
   "main": "index.mjs",
   "type": "module",
   "scripts": {
-    "dev": "node --env-file .env --watch ./src/index.mjs"
+    "dev": "node --env-file .env --watch ./src/index.mjs",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --verbose",
+    "test:bash": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:cmd": "set NODE_OPTIONS=--experimental-vm-modules && jest",
+    "test:powershell": "$env:NODE_OPTIONS=--experimental-vm-modules; jest"
   },
   "author": "Juan Carlos Jiménez Gutiérrez <jcarlosj.dev@gmail.com>",
   "license": "ISC",
@@ -15,5 +19,9 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.0"
+  },
+  "devDependencies": {
+    "cross-env": "^10.0.0",
+    "jest": "^30.0.5"
   }
 }
