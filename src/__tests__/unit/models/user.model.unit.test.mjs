@@ -2,88 +2,158 @@ import userModel from '../../../schemas/user.schema.mjs';
 
 describe('Validacion directa a UserModel', () => {
 
-    it('Debe falla si "name" no es un string (type)', async () => {
+    describe('Valida campo "name" del modelo de usuario', () => {
+
+        it('Debe falla si "name" no es un string (type)', async () => {
         
-        // Given
-        const userData = {
-            name: 9876543210,           // 👈 Campo 'name' con un valor que no es string
-            username: 'manu',
-            email: 'manuela@correo.co',
-            password: '123456',
-            role: 'registered'
-        };
+            // Given
+            const userData = {
+                name: 9876543210,           // 👈 Campo 'name' con un valor que no es string
+                username: 'manu',
+                email: 'manuela@correo.co',
+                password: '123456',
+                role: 'registered'
+            };
 
-        try {
+            try {
+                // When
+                const user = new userModel( userData );
+                await user.validate();
+            } catch (error) {
+                // Then
+                expect(error.errors.name.message).toBe( `Cast to string failed for value \"9876543210\" (type number) at path \"name\"`);
+            }
+
+        });
+
+        it('Debe falla si "name" no se encuentra (required)', async () => {
+            // expect.assertions(1);   // Aseguramos que se verifiquen una afirmacion
+
+            // Given
+            const userData = {
+                // 👈 Falta el campo 'name' para provocar el error
+                username: 'manu',
+                email: 'manuela@correo.co',
+                password: '123456',
+                role: 'registered'
+            };
+
             // When
-            const user = new userModel( userData );
-            await user.validate();
-        } catch (error) {
-            // Then
-            expect(error.errors.name.message).toBe( `Cast to String failed for value \"9876543210\" (type number) at path \"name\"`);
-        }
+            try {
+                const user = new userModel(userData);
+                await user.validate();
+            } catch (error) {
+                expect(error.name).toBe('ValidationError');
+
+                expect(error.errors).toBeDefined();
+
+                expect(typeof error.errors.name).toBe('object');
+
+                expect(error.errors.name).toMatchObject({
+                    kind: 'required',
+                    path: 'name',
+                    message: 'El nombre del usuario es obligatorio.',
+                });
+
+                expect(error.errors.name).toHaveProperty('kind');
+                expect(error.errors.name).toHaveProperty('path');
+                expect(error.errors.name).toHaveProperty('message');
+
+                expect(error.errors.name).toMatchObject({ kind: 'required' });
+                expect(error.errors.name).toMatchObject({ path: 'name' });
+                expect(error.errors.name).toMatchObject({ message: 'El nombre del usuario es obligatorio.' });
+
+                expect(error.errors.name.message).toBe('El nombre del usuario es obligatorio.');
+
+            }
+        });
+
+        it( 'Debe eliminar espacios inicio/final de "name" (trim)', () => {
+            // Given
+            const userData = {
+                name: ' Manuela Gomez   ',  // 👈 Campo 'name' con espacios en blanco al inicio y al final
+            };
+
+            // When
+            const newUser = new userModel(userData);
+
+            expect(newUser.name).toBe('Manuela Gomez');    // 👈 Trim aplicado
+
+            /** NOTA:
+             * trim es un setter/transformación significa que se ejecuta siempre que se asigna un valor al campo, antes incluso de validar o guardarlo en la BD 
+             */
+
+        });
+
+        it( 'Debe aceptar "name" como un valor válido', () => {
+            const user = new userModel({ name: 'Manuela Gomez' });
+            expect(user.name).toBe('Manuela Gomez');
+        });
 
     });
 
-    it('Debe falla si "name" no se encuentra (required)', async () => {
-        // expect.assertions(1);   // Aseguramos que se verifiquen una afirmacion
+    describe('Valida campo "username" del modelo de usuario', () => {
+        it( 'Debe fallar si "username" no es string (type)', () => {
+            const user = new userModel({ username: 12345 });
+            const error = user.validateSync();
+            expect(error.errors.username.kind).toBe('string'); // notación correcta
+        });
 
-        // Given
-        const userData = {
-            // 👈 Falta el campo 'name' para provocar el error
-            username: 'manu',
-            email: 'manuela@correo.co',
-            password: '123456',
-            role: 'registered'
-        };
+        it( 'Debe fallar "username" no se encuentra (required)', () => {
+            // Given
+            const userData = {
+                name: 'Manuela',
+                // 👈 Falta el campo 'username'
+                email: 'manuela@correo.co',
+                password: '123456',
+                role: 'registered'
+            };
 
-        // When
-        try {
+            // When
             const user = new userModel(userData);
-            await user.validate();
-        } catch (error) {
-            expect(error.name).toBe('ValidationError');
+            const error = user.validateSync();
 
-            expect(error.errors).toBeDefined();
+            // Then
+            expect(error.errors.username).toBeDefined();
+            expect(error.errors.username.message).toBe('El nombre de usuario es obligatorio.');
+        });
 
-            expect(typeof error.errors.name).toBe('object');
+        it( 'Debe fallar "username" no se encuentra (required) short-version', () => {
+            const user = new userModel({});
+            const error = user.validateSync();
+            expect(error.errors.username.message).toBe('El nombre de usuario es obligatorio.');
+        });
 
-            expect(error.errors.name).toMatchObject({
-                kind: 'required',
-                path: 'name',
-                message: 'El nombre del usuario es obligatorio.',
-            });
+        it( 'Debe eliminar espacios inicio/final de "username" (trim)', () => {
+            const user = new userModel({ username: '   manu   ' });
+            expect(user.username).toBe('manu');
+        });
 
-            expect(error.errors.name).toHaveProperty('kind');
-            expect(error.errors.name).toHaveProperty('path');
-            expect(error.errors.name).toHaveProperty('message');
+        it( 'Debe transformar automáticamente "username" a minúsculas (lowercase)', () => {
+            const user = new userModel({ username: 'mAnU' });
+            expect(user.username).toBe('manu');
+        });
 
-            expect(error.errors.name).toMatchObject({ kind: 'required' });
-            expect(error.errors.name).toMatchObject({ path: 'name' });
-            expect(error.errors.name).toMatchObject({ message: 'El nombre del usuario es obligatorio.' });
-
-            expect(error.errors.name.message).toBe('El nombre del usuario es obligatorio.');
-
-        }
+        it( 'Debe aceptar "username" como un valor válido', () => {
+            const user = new userModel({ username: 'manu' });
+            expect(user.username).toBe('manu');
+        });
     });
 
-    it( 'Debe recortar espacios en blanco al inicio y al final del campo "name" (trim)', () => {
-        // Given
-        const userData = {
-            name: ' Manuela Gomez   ',  // 👈 Campo 'name' con espacios en blanco al inicio y al final
-        };
+    
 
-        // When
-        const newUser = new userModel(userData);
-
-        expect(newUser.name).toBe('Manuela Gomez');    // 👈 Trim aplicado
-
-        /** NOTA:
-         * trim es un setter/transformación significa que se ejecuta siempre que se asigna un valor al campo, antes incluso de validar o guardarlo en la BD 
-         */
-
-    });
-
-    /** */
+    /** Mongoose ofrece dos formas de validar documentos:
+     * validate(): 
+     *      Es asíncrono, devuelve una promesa. Se usa cuando quieres esperar la validación dentro de un await o callback. Internamente Mongoose lo usa, por ejemplo, cuando haces await user.save()
+     *      Estamos probando reglas estáticas de schema (transformaciones y validaciones simples). No necesitas que Mongoose hable con MongoDB ni guarde nada. Querías que las pruebas fueran rápidas, sin async/await ni supertest, y que solo dependieran de Mongoose puro en memoria.
+     * 
+     * validateSync(): 
+     *      Es síncrono, se ejecuta de inmediato. Devuelve directamente un objeto ValidationError si hay problemas, o undefined si todo está bien. Es útil en pruebas unitarias rápidas o cuando solo quieres evaluar reglas sin lidiar con await.
+     *      Se ejecutan los setters/transformations (trim, lowercase, etc.) al crear la instancia. Después, puedes invocar validateSync() para que Mongoose aplique las reglas de validación (required, unique*, etc.).
+     * 
+     * ⚠️ Importante: 
+     *      El caso de unique: true no se valida con validate() ni con validateSync(), porque esa regla depende de MongoDB creando un índice único. Solo se puede comprobar realmente al intentar guardar (user.save()). En las pruebas anteriores la ignoramos, porque no estábamos conectando a una base.
+     * */
     
     // Pruebas para el campo "name" del modelo de usuario
     test( 'Debe lanzar error si falta el campo "name"', async () => {

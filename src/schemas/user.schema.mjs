@@ -1,5 +1,8 @@
 import mongoose from 'mongoose';
 
+// 🔴 deshabilita el casteo automático de string a nivel global (una sola vez en tu proyecto):
+mongoose.Schema.Types.String.cast(false);
+
 // Define la estructura del documento que se va a registrar
 const userSchema = new mongoose.Schema({
     name: {
@@ -12,7 +15,8 @@ const userSchema = new mongoose.Schema({
         //         return typeof value === 'string';
         //     },
         //     message: 'El nombre debe ser un string válido.'
-        // }
+        // },
+        // cast: false      // 🔴 deshabilita el casteo automático de string, solo para una propiedad específica
     },
     username: {
         type: String,
