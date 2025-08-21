@@ -1,11 +1,10 @@
 /** Las pruebas estan enfocadas a testear el modelo de usuario con MongoDB Memory Server, para aislar y validar operaciones sin depender de la base de datos real */
 import mongoose from "mongoose";
 import userModel from "../../schemas/user.schema.mjs";
-import e from "cors";
 
-describe( 'Validacion a UserModel usando "MongoDB Memory Server"', () => {
+describe('Validacion a UserModel usando "MongoDB Memory Server"', () => {
 
-    it( "Debe lanzar error si falta el campo 'name'", async () => {
+    it("Debe lanzar error si falta el campo 'name'", async () => {
         // expect.assertions(2);   // Aseguramos que se verifiquen dos afirmaciones
 
         try {
@@ -29,7 +28,7 @@ describe( 'Validacion a UserModel usando "MongoDB Memory Server"', () => {
         }
     });
 
-    it( 'Debe dar un error si el email no tiene un formato válido', async () => {
+    it('Debe dar un error si el email no tiene un formato válido', async () => {
         const userData = {
             name: 'Manuela Gomez',
             username: 'manu',
@@ -44,7 +43,7 @@ describe( 'Validacion a UserModel usando "MongoDB Memory Server"', () => {
 
             throw new Error('La validación debería haber fallado');                     // Si llegamos aquí, significa que la validación no falló como se esperaba
         } catch (error) {
-            expect(error).toBeInstanceOf( mongoose.Error.ValidationError );             // Verificamos que el error sea una instancia de ValidationError
+            expect(error).toBeInstanceOf(mongoose.Error.ValidationError);             // Verificamos que el error sea una instancia de ValidationError
             expect(error.errors.email).toBeDefined();                                   // Verificamos que el error tenga un campo 'email'
             expect(error.errors.email.message).toMatch("Por favor, introduce un correo electrónico válido.");   // Verificamos que el mensaje de error sea el esperado
         }
@@ -83,7 +82,7 @@ describe( 'Validacion a UserModel usando "MongoDB Memory Server"', () => {
         expect(error.keyValue).toHaveProperty('email', 'manuela@correo.co');
     });
 
-    it( 'Debe crear un usuario válido', async () => {
+    it('Debe crear un usuario válido', async () => {
         // Creamos un usuario que cumple todas las validaciones
         const user = new userModel({
             name: 'Manuela Gomez',
@@ -105,7 +104,7 @@ describe( 'Validacion a UserModel usando "MongoDB Memory Server"', () => {
         expect(savedUser.role).toBe('registered');
     });
 
-    it( "Debe lanzar error si el campo 'username' no es único", async () => {
+    it("Debe lanzar error si el campo 'username' no es único", async () => {
         await userModel.init();         // 👈 fuerza la creación de índices, de otra manera los índices únicos se crean en segundo plano y puede que tu prueba no los pille.
 
         const user1 = new userModel({
@@ -158,7 +157,7 @@ describe( 'Validacion a UserModel usando "MongoDB Memory Server"', () => {
         expect(savedUser.role).toBe(validRole);
     });
 
-    it( 'Debe fallar si el username ya existe', async () => {
+    it('Debe fallar si el username ya existe', async () => {
         // 1. Crear y guardar un usuario con un username específico
         const existingUser = new userModel({
             name: 'Manuela Gomez',
@@ -193,7 +192,7 @@ describe( 'Validacion a UserModel usando "MongoDB Memory Server"', () => {
     });
 
     // Pruebas para timestamps (createdAt, updatedAt)
-    it( 'Debe tener timestamps (createdAt, updatedAt)', async () => {
+    it('Debe tener timestamps (createdAt, updatedAt)', async () => {
         const user = new userModel({
             name: 'Manuela Gomez',
             username: 'manu',
@@ -208,7 +207,7 @@ describe( 'Validacion a UserModel usando "MongoDB Memory Server"', () => {
         expect(user).toHaveProperty('updatedAt'); // ✅  Aserción 2: Verifica timestamp
     });
 
-        // Pruebas para campos obligatorios faltantes
+    // Pruebas para campos obligatorios faltantes
     it('Debe lanzar error si faltan campos obligatorios', async () => {
         // Creamos un usuario con datos incompletos (faltan email y password)
         const user = new userModel({
@@ -218,20 +217,20 @@ describe( 'Validacion a UserModel usando "MongoDB Memory Server"', () => {
         });
 
         let error;
-        
+
         try {
             await user.save();      // Intentamos guardar el usuario. Mongoose está interactuando con la base de datos que levantó mongodb-memory-server
-        } catch ( err ) {
+        } catch (err) {
             error = err;
         }
 
         expect(error).toBeDefined();
         expect(error.errors).toBeDefined();
         expect(error.name).toBe('ValidationError');
-    
+
         // Verificamos que los campos faltantes estén en el error
         expect(error.errors).toHaveProperty('email');
         expect(error.errors).toHaveProperty('password');
     });
 
-} );
+});

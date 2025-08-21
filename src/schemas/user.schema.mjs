@@ -3,9 +3,16 @@ import mongoose from 'mongoose';
 // Define la estructura del documento que se va a registrar
 const userSchema = new mongoose.Schema({
     name: {
-        type: String,
-        trim: true, // Asegura que los espacios en blanco al inicio/final sean eliminados
-        required: [true, 'El nombre del usuario es obligatorio.']
+        type: String,       // caster: Asegura que cualquier cosa que se pueda cambiar a tipo string sea cambiado
+        trim: true,         // setter/transformation: Asegura que los espacios en blanco al inicio/final sean eliminados
+        required: [true, 'El nombre del usuario es obligatorio.'],      // regla de validacion:
+        // validador custom: Definici[on de funcion de validacion]
+        // validate: {
+        //     validator: function(value) {
+        //         return typeof value === 'string';
+        //     },
+        //     message: 'El nombre debe ser un string válido.'
+        // }
     },
     username: {
         type: String,
@@ -25,9 +32,9 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         trim: true,
-        minlength: [ 6, 'La contrasena debe tener al menos 6 caracteres' ],
-        maxlength: [ 12, 'La contrasena debe tener maxico 12 caracteres' ],
-        required: [ true, 'La contrasena es obligatoria' ]
+        minlength: [6, 'La contrasena debe tener al menos 6 caracteres'],
+        // maxlength: [ 12, 'La contrasena debe tener maxico 12 caracteres' ],
+        required: [true, 'La contrasena es obligatoria']
     },
     role: {
         type: String,
@@ -45,6 +52,14 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true, // Agrega las propiedades createdAt, updatedAt
     versionKey: false // contador __v de modificaciones del schema
+});
+
+// 👇 Hook para validar que `name` siempre sea string
+userSchema.pre('validate', function (next) {
+    if (this.name && typeof this.name !== 'string') {
+        this.invalidate('name', 'El nombre debe ser un string');
+    }
+    next();
 });
 
 const userModel = mongoose.model(

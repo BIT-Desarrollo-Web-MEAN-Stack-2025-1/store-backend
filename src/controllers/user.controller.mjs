@@ -37,6 +37,23 @@ const createUser = async ( req, res ) => {
     } 
     catch ( error ) {
         console.error( error );
+
+        if (error.name === 'ValidationError') {
+            // Transformar el objeto de errores en { campo: mensaje }
+            const errors = {};
+        
+            for (let field in error.errors) {
+                errors[field] = error.errors[field].message;
+            }
+            return res.status(400).json(errors);
+        }
+
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                [error.path]: `El valor proporcionado para ${error.path} no es válido`
+            });
+        }
+
         res.status( 500 ).json({ msg: 'Error: No se pudo crear el usuario' });
     }
 

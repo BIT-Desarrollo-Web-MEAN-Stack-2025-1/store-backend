@@ -1,6 +1,89 @@
 import userModel from '../../../schemas/user.schema.mjs';
 
 describe('Validacion directa a UserModel', () => {
+
+    it('Debe falla si "name" no es un string (type)', async () => {
+        
+        // Given
+        const userData = {
+            name: 9876543210,           // 👈 Campo 'name' con un valor que no es string
+            username: 'manu',
+            email: 'manuela@correo.co',
+            password: '123456',
+            role: 'registered'
+        };
+
+        try {
+            // When
+            const user = new userModel( userData );
+            await user.validate();
+        } catch (error) {
+            // Then
+            expect(error.errors.name.message).toBe( `Cast to String failed for value \"9876543210\" (type number) at path \"name\"`);
+        }
+
+    });
+
+    it('Debe falla si "name" no se encuentra (required)', async () => {
+        // expect.assertions(1);   // Aseguramos que se verifiquen una afirmacion
+
+        // Given
+        const userData = {
+            // 👈 Falta el campo 'name' para provocar el error
+            username: 'manu',
+            email: 'manuela@correo.co',
+            password: '123456',
+            role: 'registered'
+        };
+
+        // When
+        try {
+            const user = new userModel(userData);
+            await user.validate();
+        } catch (error) {
+            expect(error.name).toBe('ValidationError');
+
+            expect(error.errors).toBeDefined();
+
+            expect(typeof error.errors.name).toBe('object');
+
+            expect(error.errors.name).toMatchObject({
+                kind: 'required',
+                path: 'name',
+                message: 'El nombre del usuario es obligatorio.',
+            });
+
+            expect(error.errors.name).toHaveProperty('kind');
+            expect(error.errors.name).toHaveProperty('path');
+            expect(error.errors.name).toHaveProperty('message');
+
+            expect(error.errors.name).toMatchObject({ kind: 'required' });
+            expect(error.errors.name).toMatchObject({ path: 'name' });
+            expect(error.errors.name).toMatchObject({ message: 'El nombre del usuario es obligatorio.' });
+
+            expect(error.errors.name.message).toBe('El nombre del usuario es obligatorio.');
+
+        }
+    });
+
+    it( 'Debe recortar espacios en blanco al inicio y al final del campo "name" (trim)', () => {
+        // Given
+        const userData = {
+            name: ' Manuela Gomez   ',  // 👈 Campo 'name' con espacios en blanco al inicio y al final
+        };
+
+        // When
+        const newUser = new userModel(userData);
+
+        expect(newUser.name).toBe('Manuela Gomez');    // 👈 Trim aplicado
+
+        /** NOTA:
+         * trim es un setter/transformación significa que se ejecuta siempre que se asigna un valor al campo, antes incluso de validar o guardarlo en la BD 
+         */
+
+    });
+
+    /** */
     
     // Pruebas para el campo "name" del modelo de usuario
     test( 'Debe lanzar error si falta el campo "name"', async () => {
@@ -94,59 +177,59 @@ describe('Validacion directa a UserModel', () => {
         expect(error.errors.password.message).toBe('La contrasena debe tener al menos 6 caracteres');
     });
 
-    test( 'Debe lanzar error si el campo "password" tiene más de 12 carácteres', async () => {
-        const user = new userModel({
-            name: 'Manuela',
-            username: 'manu',
-            email: 'manuela@correo.co',     
-            password: '123456789101112',              // 👈  Contraseña con más de 12 caracteres para provocar el error
-            role: 'registered'
-        });
+    // test( 'Debe lanzar error si el campo "password" tiene más de 12 carácteres', async () => {
+    //     const user = new userModel({
+    //         name: 'Manuela',
+    //         username: 'manu',
+    //         email: 'manuela@correo.co',     
+    //         password: '123456789101112',              // 👈  Contraseña con más de 12 caracteres para provocar el error
+    //         role: 'registered'
+    //     });
 
-        let error;
+    //     let error;
             
-        try {
-            await user.validate();
-        } catch ( err ) {
-            error = err;
-        }
+    //     try {
+    //         await user.validate();
+    //     } catch ( err ) {
+    //         error = err;
+    //     }
 
-        expect(error).toBeDefined();
-        expect(error.errors.password).toBeDefined();
-        expect(error.errors.password.message).toBe('La contrasena debe tener maxico 12 caracteres');
-    });
+    //     expect(error).toBeDefined();
+    //     expect(error.errors.password).toBeDefined();
+    //     expect(error.errors.password.message).toBe('La contrasena debe tener maxico 12 caracteres');
+    // });
 
     // Pruebas agrupadas para el campo "password" del modelo de usuario
-    test.each(
-        [
-            { password: '12345', valido: false, mensaje: 'La contrasena debe tener al menos 6 caracteres' },            // 👈 demasiado corta
-            { password: '123456789101112', valido: false, mensaje: 'La contrasena debe tener maxico 12 caracteres' },   // 👈 demasiado larga
-            { password: '123456', valido: true },                                                                       // 👈 límite inferior válido
-            { password: '123456789012', valido: true }                                                                  // 👈 límite superior válido
-        ]
-    )('Valida el password => %s', async ({ password, valido, mensaje }) => {
-        const user = new userModel({
-            name: 'Manuela',
-            username: 'manu',
-            email: 'manuela@correo.co',
-            password,
-            role: 'registered'
-        });
+    // test.each(
+    //     [
+    //         { password: '12345', valido: false, mensaje: 'La contrasena debe tener al menos 6 caracteres' },            // 👈 demasiado corta
+    //         { password: '123456789101112', valido: false, mensaje: 'La contrasena debe tener maxico 12 caracteres' },   // 👈 demasiado larga
+    //         { password: '123456', valido: true },                                                                       // 👈 límite inferior válido
+    //         { password: '123456789012', valido: true }                                                                  // 👈 límite superior válido
+    //     ]
+    // )('Valida el password => %s', async ({ password, valido, mensaje }) => {
+    //     const user = new userModel({
+    //         name: 'Manuela',
+    //         username: 'manu',
+    //         email: 'manuela@correo.co',
+    //         password,
+    //         role: 'registered'
+    //     });
 
-        if (valido) {
-            await expect(user.validate()).resolves.toBeUndefined();
-        } else {
-            let error;
-            try {
-                await user.validate();
-            } catch (err) {
-                error = err;
-            }
-            expect(error).toBeDefined();
-            expect(error.errors.password).toBeDefined();
-            expect(error.errors.password.message).toBe(mensaje);
-        }
-    });
+    //     if (valido) {
+    //         await expect(user.validate()).resolves.toBeUndefined();
+    //     } else {
+    //         let error;
+    //         try {
+    //             await user.validate();
+    //         } catch (err) {
+    //             error = err;
+    //         }
+    //         expect(error).toBeDefined();
+    //         expect(error.errors.password).toBeDefined();
+    //         expect(error.errors.password.message).toBe(mensaje);
+    //     }
+    // });
 
     // Funcion para desplegar un título personalizado en las pruebas agrupadas del campo "password
     function title({ password, valido }) {
