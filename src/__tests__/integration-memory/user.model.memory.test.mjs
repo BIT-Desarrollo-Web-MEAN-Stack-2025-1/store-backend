@@ -82,6 +82,36 @@ describe('Validacion a UserModel usando "MongoDB Memory Server"', () => {
         expect(error.keyValue).toHaveProperty('email', 'manuela@correo.co');
     });
 
+
+    it('Debe lanzar error si el campo "email" no es único (unique)', async () => {
+        const email = 'manuela@correo.co';
+
+        // Primer documento válido
+        await userModel.create({
+            name: 'Manuela',
+            username: 'manu',
+            email,
+            password: '123456',
+            role: 'admin',
+            isActive: true
+        });
+
+        // Segundo documento con mismo email pero demás campos válidos
+        await expect(
+            userModel.create({
+            name: 'Manuela Duplicada',
+            username: 'manu2',
+            email,
+            password: '123456',
+            role: 'admin',
+            isActive: true
+            })
+        ).rejects.toMatchObject({
+            name: 'MongoServerError',
+            code: 11000
+        });
+    });
+
     it('Debe crear un usuario válido', async () => {
         // Creamos un usuario que cumple todas las validaciones
         const user = new userModel({

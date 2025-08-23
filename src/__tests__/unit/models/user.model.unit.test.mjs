@@ -93,6 +93,7 @@ describe('Validacion directa a UserModel', () => {
     });
 
     describe('Valida campo "username" del modelo de usuario', () => {
+
         it( 'Debe fallar si "username" no es string (type)', () => {
             const user = new userModel({ username: 12345 });
             const error = user.validateSync();
@@ -138,9 +139,54 @@ describe('Validacion directa a UserModel', () => {
             const user = new userModel({ username: 'manu' });
             expect(user.username).toBe('manu');
         });
+
     });
 
-    
+    describe( 'Valida campo "email" del modelo de usuario', () => {
+
+        it( 'Debe fallar si "email" no es string (type)', () => {
+            const user = new userModel({ email: 12345 });
+            const error = user.validateSync();
+        
+            expect(error.name).toBe('ValidationError');
+            expect(error.errors).toBeDefined();
+            expect(error.errors.email).toBeDefined();
+            expect(error.errors).toMatchObject({ email: { path: 'email' } });
+            expect(error.errors.email.kind).toBe('string');
+        });
+
+        it( 'Debe fallar si "email" no se encuentra (required)', () => {
+            const user = new userModel({});
+            const error = user.validateSync();
+        
+            expect(error.name).toBe('ValidationError');
+            expect(error.errors).toBeDefined();
+            expect(error.errors.email).toBeDefined();
+            expect(error.errors).toMatchObject({ email: { path: 'email' } });
+            expect(error.errors.email.message).toBe('El correo electrónico es obligatorio.');
+        });
+
+        it( 'Debe eliminar espacios inicio/final de "email" (trim)', () => {
+            const user = new userModel({ email: '   manuela@correo.co   ' });
+            const error = user.validateSync();
+
+            expect(error.name).toBe('ValidationError');
+
+            expect(user.email).toBe('manuela@correo.co');
+            expect(user.email).not.toBe('   manuela@correo.co   ');
+        });
+
+        it( 'Debe transformar automáticamente "email" a minúsculas (lowercase)', async () => {
+            const user = new userModel({ email: 'ManueLa@correo.co' });
+            expect(user.email).toBe('manuela@correo.co');
+        });
+
+        it( 'Debe aceptar "email" como un valor válido', () => {
+            const user = new userModel({ username: 'manuela@correo.co' });
+            expect(user.username).toBe('manuela@correo.co');
+        });
+
+    });
 
     /** Mongoose ofrece dos formas de validar documentos:
      * validate(): 
